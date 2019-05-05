@@ -35,3 +35,28 @@ fieldnames = ['first_name', 'last_name']
 
 # create 2 lists
 # List
+
+# maybe this way:
+from datetime import date
+import io
+
+data = io.open('export_840377_1_en-4cc7d3.csv', 'r', encoding='utf8').readlines()
+
+previous_addresses = set()
+
+with io.open('result.csv', 'w', encoding='utf8') as output:
+    output.write(data[0].strip())
+    output.write(';mehet\n')
+
+    for line in data[1:]:
+        linedata = line.strip().split(';')
+        if linedata[2].strip() == '' and linedata[-2] == 'True':
+            if linedata[1] in previous_addresses:
+                linedata[2] = '1970-01-01'
+                linedata.append('nem')
+                print(linedata[0])
+            else:
+                previous_addresses.add(linedata[1])
+                linedata[2] = str(date.today())
+                linedata.append('igen')
+            output.write(';'.join(linedata) + '\n')
